@@ -29,9 +29,9 @@ void US100Component::loop() {
   if (this->bytes_expected_ == 2 && this->available() >= 2) {
     // we're expecting a distance measurement to come in, and there are
     // enough bytes for it, process it
-    unsigned int b1 = this->read();
-    unsigned int b2 = this->read();
-    unsigned int mm = b1 * 256 + b2;
+    uint8_t b1 = this->read();
+    uint8_t b2 = this->read();
+    uint16_t int mm = (static_cast<uint16_t>(b1) << 8) | b2;
     if ((mm > 1) && (mm < 10000)) {
       ESP_LOGV(TAG, "Distance is %u mm", mm);
       if (this->distance_sensor_ != nullptr) {
@@ -44,7 +44,7 @@ void US100Component::loop() {
     this->bytes_expected_ = 1;  // we should start looking for a temperature reading
   } else if (this->bytes_expected_ == 1 && this->available() >= 1) {
     // we are looking for a temperature and there are bytes to read
-    int temp = this->read();
+    uint8_t temp = this->read();
     if ((temp > 1) && (temp < 130)) {
       temp -= 45;
       ESP_LOGV(TAG, "Temperature is %d °C", temp);
