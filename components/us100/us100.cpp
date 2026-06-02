@@ -44,12 +44,14 @@ void US100Component::loop() {
     this->bytes_expected_ = 1;  // we should start looking for a temperature reading
   } else if (this->bytes_expected_ == 1 && this->available() >= 1) {
     // we are looking for a temperature and there are bytes to read
-    uint8_t temp = this->read();
-    if ((temp > 1) && (temp < 130)) {
-      temp -= 45;
-      ESP_LOGV(TAG, "Temperature is %d °C", temp);
+    uint8_t raw_temp = this->read();
+
+    if ((raw_temp > 1) && (raw_temp < 130)) {
+      int16_t temp_c = static_cast<int16_t>(raw_temp) - 45;
+      ESP_LOGV(TAG, "Temperature is %d °C", temp_c);
+    
       if (this->temperature_sensor_ != nullptr) {
-        this->temperature_sensor_->publish_state(temp);
+        this->temperature_sensor_->publish_state(temp_c);
       }
     }
     this->bytes_expected_ = 0;  // stop looking for bytes
