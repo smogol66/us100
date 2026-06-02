@@ -12,7 +12,7 @@ from esphome.const import (
     UNIT_MILLIMETER,
 )
 
-DEPENDENCIES = ["uart"]
+DEPENDENCIES = ["uart", "sensor"]
 
 us100_ns = cg.esphome_ns.namespace("us100")
 US100Component = us100_ns.class_("US100Component", cg.PollingComponent, uart.UARTDevice)
