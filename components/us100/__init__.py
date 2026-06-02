@@ -1,3 +1,7 @@
+# Fork maintained by @smogol66
+# Original component by @redhoodie
+# Based on: https://github.com/redhoodie/us100
+
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import sensor, uart
@@ -11,8 +15,10 @@ from esphome.const import (
     UNIT_CELSIUS,
     UNIT_MILLIMETER,
 )
+CODEOWNERS = ["@smogol66"]
 
-DEPENDENCIES = ["uart", "sensor"]
+DEPENDENCIES = ["uart"]
+AUTO_LOAD = ["sensor"]
 
 us100_ns = cg.esphome_ns.namespace("us100")
 US100Component = us100_ns.class_("US100Component", cg.PollingComponent, uart.UARTDevice)
