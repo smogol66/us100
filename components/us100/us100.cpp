@@ -31,7 +31,7 @@ void US100Component::loop() {
     // enough bytes for it, process it
     uint8_t b1 = this->read();
     uint8_t b2 = this->read();
-    uint16_t int mm = (static_cast<uint16_t>(b1) << 8) | b2;
+    uint16_t mm = (static_cast<uint16_t>(b1) << 8) | b2;
     if ((mm > 1) && (mm < 10000)) {
       ESP_LOGV(TAG, "Distance is %u mm", mm);
       if (this->distance_sensor_ != nullptr) {
