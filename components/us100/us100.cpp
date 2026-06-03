@@ -32,12 +32,19 @@ void US100Component::loop() {
     uint8_t b1 = this->read();
     uint8_t b2 = this->read();
     uint16_t mm = (static_cast<uint16_t>(b1) << 8) | b2;
+    
+    ESP_LOGD(TAG, "Distance RAW: b1=0x%02X (%u), b2=0x%02X (%u) -> %u mm", 
+             b1, b1, b2, b2, mm);
+    
     if ((mm > 1) && (mm < 10000)) {
-      ESP_LOGV(TAG, "Distance is %u mm", mm);
+      ESP_LOGI(TAG, "Distance VALID: %u mm", mm);
       if (this->distance_sensor_ != nullptr) {
         this->distance_sensor_->publish_state(mm);
       }
+    } else {
+      ESP_LOGW(TAG, "Distance OUT OF RANGE: %u mm (ignored)", mm);
     }
+    
     // finished with distance measurement, move on to temperature
     this->flush();
     this->write(0x50);  // tell the US100 to start a temperature measurement
@@ -45,14 +52,20 @@ void US100Component::loop() {
   } else if (this->bytes_expected_ == 1 && this->available() >= 1) {
     // we are looking for a temperature and there are bytes to read
     uint8_t raw_temp = this->read();
+    int16_t temp_c = static_cast<int16_t>(raw_temp) - 45;
+    
+    ESP_LOGD(TAG, "Temperature RAW: raw=0x%02X (%u) -> %d °C", 
+             raw_temp, raw_temp, temp_c);
 
     if ((raw_temp > 1) && (raw_temp < 130)) {
-      int16_t temp_c = static_cast<int16_t>(raw_temp) - 45;
-      ESP_LOGV(TAG, "Temperature is %d °C", temp_c);
+      ESP_LOGI(TAG, "Temperature VALID: %d °C", temp_c);
     
       if (this->temperature_sensor_ != nullptr) {
         this->temperature_sensor_->publish_state(temp_c);
       }
+    } else {
+      ESP_LOGW(TAG, "Temperature OUT OF RANGE: raw=0x%02X (%d °C) (ignored)", 
+               raw_temp, temp_c);
     }
     this->bytes_expected_ = 0;  // stop looking for bytes
   }
