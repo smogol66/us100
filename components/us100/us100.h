@@ -23,6 +23,12 @@ class US100Component : public PollingComponent, public uart::UARTDevice {
   sensor::Sensor *temperature_sensor_{nullptr};
   sensor::Sensor *distance_sensor_{nullptr};
   unsigned int bytes_expected_{0};
+  uint32_t request_started_ms_{0};
+  static constexpr uint32_t kResponseTimeoutMs = 1000;
+  static constexpr uint32_t kBetweenMeasurementsDelayMs = 20;
+
+  void reset_waiting_state();
+  void publish_unavailable(sensor::Sensor *sensor);
 };
 
 }  // namespace us100
