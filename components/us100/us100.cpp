@@ -42,8 +42,8 @@ void US100Component::reset_waiting_state() {
 void US100Component::loop() {
   if (this->bytes_expected_ != 0 && this->request_started_ms_ != 0 &&
       (millis() - this->request_started_ms_) > kResponseTimeoutMs) {
-    ESP_LOGW(TAG, "No response from US100 within %u ms; resetting UART state",
-             kResponseTimeoutMs);
+    ESP_LOGW(TAG, "No response from US100 within %lu ms; resetting UART state",
+             static_cast<unsigned long>(kResponseTimeoutMs));
     this->publish_unavailable(this->distance_sensor_);
     this->publish_unavailable(this->temperature_sensor_);
     this->flush();
